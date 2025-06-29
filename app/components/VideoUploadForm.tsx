@@ -16,7 +16,7 @@ const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadS
   const [thumbnailUrl, setThumbnailUrl] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [uploadingVideo, setUploadingVideo] = useState<boolean>(false);
-  const [uploadProgress, setUploadProgress] = useState<number>(0); // ✅ Progress bar state
+  const [uploadProgress, setUploadProgress] = useState<number>(0); 
 
   const handleFileUploadSuccess = (res: any) => {
     setVideoUrl(res.url);
