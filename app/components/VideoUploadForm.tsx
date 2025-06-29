@@ -16,11 +16,10 @@ const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadS
   const [thumbnailUrl, setThumbnailUrl] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [uploadingVideo, setUploadingVideo] = useState<boolean>(false);
+  const [uploadProgress, setUploadProgress] = useState<number>(0); // ✅ Progress bar state
 
   const handleFileUploadSuccess = (res: any) => {
-    // Assuming res.url contains the uploaded video URL
     setVideoUrl(res.url);
-    // Optionally set thumbnail URL if available in response metadata
     if (res.thumbnailUrl) {
       setThumbnailUrl(res.thumbnailUrl);
     }
@@ -29,6 +28,7 @@ const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadS
 
   const handleFileUploadProgress = (progress: number) => {
     setUploadingVideo(progress < 100);
+    setUploadProgress(progress);
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -62,6 +62,7 @@ const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadS
       setDescription("");
       setVideoUrl("");
       setThumbnailUrl("");
+      setUploadProgress(0);
       onUploadSuccess?.();
     } catch (error: unknown) {
       showNotification(error instanceof Error ? error.message : String(error), "error");
@@ -119,10 +120,22 @@ const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadS
             onProgress={handleFileUploadProgress}
             fileType="video"
           />
-          {uploadingVideo && <p className="text-sm text-slate-400 mt-1">Uploading video...</p>}
+          {uploadingVideo && (
+            <div className="mt-2">
+              <div className="w-full bg-slate-700 rounded-full h-2.5 overflow-hidden">
+                <div
+                  className="bg-gradient-to-r from-indigo-500 to-purple-500 h-full rounded-full transition-all duration-300 ease-in-out"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+              <p className="text-xs text-slate-400 text-center mt-1">
+                Uploading... {uploadProgress.toFixed(0)}%
+              </p>
+            </div>
+          )}
         </div>
 
-        {/* Video URL (read-only) */}
+        {/* Video URL (readonly) */}
         {videoUrl && (
           <div>
             <label htmlFor="videoUrl" className="block text-sm font-medium text-slate-200 mb-1">
@@ -138,7 +151,7 @@ const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadS
           </div>
         )}
 
-        {/* Thumbnail URL */}
+        {/* Thumbnail */}
         <div>
           <label htmlFor="thumbnailUrl" className="block text-sm font-medium text-slate-200 mb-1">
             Thumbnail Image URL
@@ -187,3 +200,4 @@ const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadS
 };
 
 export default VideoUploadForm;
+
