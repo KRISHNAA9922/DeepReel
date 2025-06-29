@@ -48,9 +48,12 @@ function RegisterPage() {
     <Providers>
       <NotificationProvider>
         <Header />
-        <main className="container mx-auto p-8 border-2 rounded-lg shadow-md max-w-md">
-          <h1 className="text-2xl font-bold mb-4">Register</h1>
-          <form onSubmit={handleSubmit} className="space-y-4">
+        <main className="container mx-auto mt-12 p-8 border-2 rounded-4xl shadow-md max-w-md">
+<h1 className="text-2xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-pink-500 bg-clip-text text-transparent">
+  Register
+</h1>
+
+          <form onSubmit={handleSubmit} className="space-y-6 ">
             <div>
               <label htmlFor="email" className="block font-medium mb-1">
                 Email

@@ -19,7 +19,6 @@ export default function UploadPage() {
       <NotificationProvider>
         <Header />
         <main className="container mx-auto p-4">
-          <h1 className="text-3xl font-bold mb-6">Upload Video</h1>
           <VideoUploadForm onUploadSuccess={handleUploadSuccess} />
         </main>
       </NotificationProvider>

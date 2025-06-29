@@ -18,7 +18,6 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onUploadSuccess }) =>
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Convert YouTube link to embed link
   const convertToEmbedUrl = (url: string) => {
     const match = url.match(/(?:watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
     return match ? `https://www.youtube.com/embed/${match[1]}` : url;
@@ -28,7 +27,7 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onUploadSuccess }) =>
     e.preventDefault();
 
     if (!title || !description || !videoUrl || !thumbnailUrl) {
-      showNotification("Please fill in all required fields.", "error");
+      showNotification("Please fill in all fields.", "error");
       return;
     }
 
@@ -56,19 +55,14 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onUploadSuccess }) =>
       });
 
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to upload video");
-      }
+      if (!response.ok) throw new Error(data.error || "Upload failed");
 
       showNotification("Video uploaded successfully!", "success");
 
-      // Reset
       setTitle("");
       setDescription("");
       setVideoUrl("");
       setThumbnailUrl("");
-
       onUploadSuccess?.();
     } catch (error: any) {
       showNotification(error.message || "An error occurred", "error");
@@ -78,79 +72,96 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onUploadSuccess }) =>
   };
 
   return (
-    <div className="bg-white/80 backdrop-blur-md border border-indigo-200 rounded-2xl p-8 shadow-xl max-w-2xl mx-auto">
-      <h2 className="text-3xl font-bold text-indigo-600 mb-6 text-center">
-        🎥 Upload New Video
+    <div className="bg-black border border-slate-800 rounded-xl p-8 shadow-xl max-w-2xl mx-auto my-10">
+      <h2 className="text-3xl font-semibold text-white mb-6 text-center">
+        🎬 Upload a Video
       </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-6">
         {/* Title */}
         <div>
-          <label htmlFor="title" className="block text-sm font-semibold text-indigo-700 mb-1">
-            Title
+          <label htmlFor="title" className="block text-sm font-medium text-slate-200 mb-1">
+            Video Title
           </label>
           <input
             id="title"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full px-4 py-2 border border-indigo-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            placeholder="Enter a catchy title"
+            className="w-full rounded-lg border border-slate-600 bg-slate-900 text-white placeholder:text-slate-400 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-500 shadow-sm"
             required
           />
         </div>
 
         {/* Description */}
         <div>
-          <label htmlFor="description" className="block text-sm font-semibold text-indigo-700 mb-1">
+          <label htmlFor="description" className="block text-sm font-medium text-slate-200 mb-1">
             Description
           </label>
           <textarea
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-4 py-2 border border-indigo-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            placeholder="Brief description of your video..."
             rows={3}
+            className="w-full rounded-lg border border-slate-600 bg-slate-900 text-white placeholder:text-slate-400 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-500 shadow-sm"
             required
           />
         </div>
 
         {/* Video URL */}
         <div>
-          <label htmlFor="videoUrl" className="block text-sm font-semibold text-indigo-700 mb-1">
-            YouTube Video URL
+          <label htmlFor="videoUrl" className="block text-sm font-medium text-slate-200 mb-1">
+             Video URL
           </label>
           <input
             id="videoUrl"
             type="url"
             value={videoUrl}
             onChange={(e) => setVideoUrl(e.target.value)}
-            placeholder="https://www.youtube.com/watch?v=abc123"
-            className="w-full px-4 py-2 border border-indigo-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            placeholder="https://..."
+            className="w-full rounded-lg border border-slate-600 bg-slate-900 text-white placeholder:text-slate-400 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-500 shadow-sm"
             required
           />
         </div>
 
         {/* Thumbnail URL */}
         <div>
-          <label htmlFor="thumbnailUrl" className="block text-sm font-semibold text-indigo-700 mb-1">
-            Thumbnail URL
+          <label htmlFor="thumbnailUrl" className="block text-sm font-medium text-slate-200 mb-1">
+            Thumbnail Image URL
           </label>
           <input
             id="thumbnailUrl"
             type="url"
             value={thumbnailUrl}
             onChange={(e) => setThumbnailUrl(e.target.value)}
-            className="w-full px-4 py-2 border border-indigo-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            placeholder="https://example.com/image.jpg"
+            className="w-full rounded-lg border border-slate-600 bg-slate-900 text-white placeholder:text-slate-400 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-500 shadow-sm"
             required
           />
         </div>
 
-        {/* Submit */}
+        {/* Thumbnail Preview */}
+        {thumbnailUrl && (
+          <div className="mt-3">
+            <p className="text-sm text-slate-500 mb-1">Thumbnail Preview:</p>
+            <img
+              src={thumbnailUrl}
+              alt="Thumbnail preview"
+              className="w-full rounded-md border border-slate-700 shadow"
+            />
+          </div>
+        )}
+
+        {/* Submit Button */}
         <button
           type="submit"
           disabled={loading}
-          className={`w-full py-2 px-4 text-white font-semibold rounded-lg transition-all duration-200 ${
-            loading ? "bg-indigo-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700"
+          className={`w-full py-2 px-4 font-semibold text-white rounded-lg transition duration-200 ${
+            loading
+              ? "bg-slate-600 cursor-not-allowed animate-pulse"
+              : "bg-slate-800 hover:bg-slate-700"
           }`}
         >
           {loading ? "Uploading..." : "Upload Video"}

@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     await connectToDatabase();
-// cheack for the required filed
+    // cheack for the required filed
     const body: IVideo = await request.json();
     if (
       !body.title ||
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-// send the data responce to imagekit 
+    // send the data responce to imagekit
     const videoData = {
       ...body,
       controls: body?.controls ?? true,
@@ -61,6 +61,37 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to create video" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    await connectToDatabase();
+
+    const { searchParams } = new URL(request.url);
+    const videoId = searchParams.get("id");
+
+    if (!videoId) {
+      return NextResponse.json({ error: "Missing video ID" }, { status: 400 });
+    }
+
+    const deletedVideo = await Video.findByIdAndDelete(videoId);
+
+    if (!deletedVideo) {
+      return NextResponse.json({ error: "Video not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ message: "Video deleted successfully" });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Failed to delete video" },
       { status: 500 }
     );
   }
