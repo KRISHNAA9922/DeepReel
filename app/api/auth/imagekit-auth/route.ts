@@ -15,6 +15,7 @@ export async function GET() {
     return Response.json(
       {
         error: "Authentication for Imagekit failed",
+        message: error instanceof Error ? error.message : String(error),
       },
       { status: 500 }
     );

@@ -4,6 +4,7 @@
 import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useNotification } from "./Notification";
+import Image from "next/image";
 
 interface VideoUploadFormProps {
   onUploadSuccess?: () => void;
@@ -27,7 +28,7 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onUploadSuccess }) =>
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!title || !description || !videoUrl || !thumbnailUrl) {
+    if (!title || !description || !videoUrl ) {
       showNotification("Please fill in all fields.", "error");
       return;
     }
@@ -65,15 +66,15 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onUploadSuccess }) =>
       setVideoUrl("");
       setThumbnailUrl("");
       onUploadSuccess?.();
-    } catch (error: any) {
-      showNotification(error.message || "An error occurred", "error");
+    } catch (error) {
+      showNotification(error instanceof Error ? error.message : String(error), "error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-black border border-slate-800 rounded-xl p-8 shadow-xl max-w-2xl mx-auto my-10 sm:p-6 sm:max-w-full sm:mx-4">
+<div className="bg-black border border-slate-800 rounded-xl p-6 shadow-xl max-w-md mx-auto my-12 sm:px-6">
       <h2 className="text-3xl font-semibold text-white mb-6 text-center sm:text-2xl sm:mb-4">
         🎬 Upload a Video
       </h2>
@@ -147,11 +148,12 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onUploadSuccess }) =>
         {thumbnailUrl && (
           <div className="mt-3 sm:mt-2">
             <p className="text-sm text-slate-500 mb-1">Thumbnail Preview:</p>
-            <img
-              src={thumbnailUrl}
-              alt="Thumbnail preview"
-              className="w-full rounded-md border border-slate-700 shadow"
-            />
+             <Image
+        src={thumbnailUrl}
+        alt="Thumbnail preview"
+        fill
+        className="object-cover rounded-md"
+      />
           </div>
         )}
 

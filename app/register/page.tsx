@@ -39,8 +39,8 @@ function RegisterPage() {
 
       alert("Registration successful");
       router.push("/login");
-    } catch (error: any) {
-      alert(error.message || "An error occurred");
+    } catch (error) {
+      alert(error instanceof Error ? error.message : String(error));
     }
   };
 

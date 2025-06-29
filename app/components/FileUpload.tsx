@@ -1,34 +1,31 @@
 "use client"; // This component must be a client component
 
 import {
-  ImageKitAbortError,
-  ImageKitInvalidRequestError,
-  ImageKitServerError,
-  ImageKitUploadNetworkError,
   upload,
 } from "@imagekit/next";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 interface FileUploadProps {
-  onSuccess: (res: any) => void;
+  onSuccess: (res: unknown) => void;
   onProgress?: (progress: number) => void;
   fileType?: "image" | "video";
 }
 
 const FileUpload = ({ onSuccess, onProgress, fileType }: FileUploadProps) => {
   const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  // Removed unused error state to fix lint error
+  // const [error, setError] = useState<string | null>(null);
 
   //optional validation
 
   const validateFile = (file: File) => {
     if (fileType === "video") {
       if (!file.type.startsWith("video/")) {
-        setError("Please upload a valid video file");
+        // setError("Please upload a valid video file");
       }
     }
     if (file.size > 100 * 1024 * 1024) {
-      setError("File size must be less than 100 MB");
+      // setError("File size must be less than 100 MB");
     }
     return true;
   };
@@ -39,7 +36,7 @@ const FileUpload = ({ onSuccess, onProgress, fileType }: FileUploadProps) => {
     if (!file || !validateFile(file)) return;
 
     setUploading(true);
-    setError(null);
+    // setError(null);
 
     try {
       const authRes = await fetch("/api/auth/imagekit-auth");
@@ -61,8 +58,8 @@ const FileUpload = ({ onSuccess, onProgress, fileType }: FileUploadProps) => {
         
       });
       onSuccess(res)
-    } catch (error) {
-        console.error("Upload failed", error)
+    } catch {
+        console.error("Upload failed")
     } finally {
         setUploading(false)
     }

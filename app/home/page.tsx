@@ -5,7 +5,6 @@ import { useSession } from 'next-auth/react';
 import Providers from '../components/Providers';
 import Header from '../components/Header';
 import { NotificationProvider } from '../components/Notification';
-import VideoUploadForm from '../components/VideoUploadForm';
 import VideoFeed from '../components/VideoFeed';
 import { IVideo } from '@/models/Video';
 import { motion } from 'framer-motion';
@@ -13,7 +12,6 @@ import { motion } from 'framer-motion';
 export default function Home() {
   const { data: session, status } = useSession();
   const [videos, setVideos] = useState<IVideo[]>([]);
-  const [showUploadForm, setShowUploadForm] = useState(false);
 
   useEffect(() => {
     fetchVideos();
@@ -28,15 +26,6 @@ export default function Home() {
     } catch (error) {
       console.error('Failed to fetch videos', error);
     }
-  };
-
-  const handleUploadSuccess = () => {
-    setShowUploadForm(false);
-    fetchVideos();
-  };
-
-  const handleDelete = (id: string) => {
-    setVideos((prevVideos) => prevVideos.filter((video) => video._id?.toString() !== id));
   };
 
   return (
@@ -77,16 +66,7 @@ export default function Home() {
                   transition={{ duration: 0.3 }}
                   className="flex justify-center mb-6"
                 >
-                  {/* {!showUploadForm ? (
-                    <button
-                      onClick={() => setShowUploadForm(true)}
-                      className="px-6 py-3 bg-indigo-500 text-white font-semibold rounded-full shadow-lg hover:bg-indigo-600 transition-all duration-300 transform hover:scale-105"
-                    >
-                      Share Your Video
-                    </button>
-                  ) : (
-                    <VideoUploadForm onUploadSuccess={handleUploadSuccess} />
-                  )} */}
+                  {/* Upload button and form removed as unused */}
                 </motion.div>
               ) : (
                 <motion.p

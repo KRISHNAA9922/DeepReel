@@ -17,7 +17,7 @@ export async function GET() {
     return NextResponse.json(videos);
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to fetch videos" },
+      { error: "Failed to fetch videos", message: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(newVideo);
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to create video" },
+      { error: "Failed to create video", message: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }
@@ -91,7 +91,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ message: "Video deleted successfully" });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to delete video" },
+      { error: "Failed to delete video", message: error instanceof Error ? error.message : String(error) },
       { status: 500 }
     );
   }

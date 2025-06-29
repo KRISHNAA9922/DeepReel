@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { IVideo } from "@/models/Video";
 import VideoComponent from "./VideoComponent";
 
@@ -9,9 +9,6 @@ interface VideoFeedProps {
 export default function VideoFeed({ videos }: VideoFeedProps) {
   const [videoList, setVideoList] = useState<IVideo[]>(videos);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const touchStartY = useRef<number | null>(null);
-  const touchEndY = useRef<number | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setVideoList(videos);
@@ -22,31 +19,6 @@ export default function VideoFeed({ videos }: VideoFeedProps) {
     if (currentIndex >= videoList.length - 1 && currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
     }
-  };
-
-  const minSwipeDistance = 50;
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    touchStartY.current = e.changedTouches[0].clientY;
-  };
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    touchEndY.current = e.changedTouches[0].clientY;
-  };
-
-  const onTouchEnd = () => {
-    if (touchStartY.current !== null && touchEndY.current !== null) {
-      const distance = touchStartY.current - touchEndY.current;
-      if (distance > minSwipeDistance) {
-        // swipe up
-        setCurrentIndex((prev) => Math.min(prev + 1, videoList.length - 1));
-      } else if (distance < -minSwipeDistance) {
-        // swipe down
-        setCurrentIndex((prev) => Math.max(prev - 1, 0));
-      }
-    }
-    touchStartY.current = null;
-    touchEndY.current = null;
   };
 
   return (
