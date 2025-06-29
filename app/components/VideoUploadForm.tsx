@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from "react";
@@ -72,8 +73,8 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onUploadSuccess }) =>
   };
 
   return (
-    <div className="bg-black border border-slate-800 rounded-xl p-8 shadow-xl max-w-2xl mx-auto my-10">
-      <h2 className="text-3xl font-semibold text-white mb-6 text-center">
+    <div className="bg-black border border-slate-800 rounded-xl p-8 shadow-xl max-w-2xl mx-auto my-10 sm:p-6 sm:max-w-full sm:mx-4">
+      <h2 className="text-3xl font-semibold text-white mb-6 text-center sm:text-2xl sm:mb-4">
         🎬 Upload a Video
       </h2>
 
@@ -144,7 +145,7 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onUploadSuccess }) =>
 
         {/* Thumbnail Preview */}
         {thumbnailUrl && (
-          <div className="mt-3">
+          <div className="mt-3 sm:mt-2">
             <p className="text-sm text-slate-500 mb-1">Thumbnail Preview:</p>
             <img
               src={thumbnailUrl}

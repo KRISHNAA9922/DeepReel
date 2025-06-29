@@ -1,23 +1,26 @@
+import { useEffect, useRef, useState } from "react";
 import { IKVideo } from "imagekitio-react";
 import Link from "next/link";
 import { IVideo } from "@/models/Video";
-import { useState } from "react";
 import { useNotification } from "./Notification";
 
 const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT || "https://ik.imagekit.io/krishna23";
 
-export default function VideoComponent({ video, onDelete }: { video: IVideo; onDelete?: (id: string) => void }) {
-  //const [hasError, setHasError] = useState(false);
+export default function VideoComponent({ video, onDelete, isActive }: { video: IVideo; onDelete?: (id: string) => void; isActive?: boolean }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const { showNotification } = useNotification();
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  // if (hasError) {
-  //   return (
-  //     <div className="card bg-base-100 shadow p-4 text-center text-red-600">
-  //       <p>Failed to load video.</p>
-  //     </div>
-  //   );
-  // }
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isActive) {
+        videoRef.current.play().catch(() => {});
+      } else {
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
+      }
+    }
+  }, [isActive]);
 
   const isExternalUrl = video.videoUrl.startsWith("http://") || video.videoUrl.startsWith("https://");
   const videoPath = isExternalUrl ? video.videoUrl : `${urlEndpoint}${video.videoUrl}`;
@@ -58,10 +61,10 @@ export default function VideoComponent({ video, onDelete }: { video: IVideo; onD
           >
             {isExternalUrl ? (
               <video
+                ref={videoRef}
                 src={videoPath}
                 controls={video.controls}
                 className="w-full h-full object-cover"
-                //onError={() => setHasError(true)}
               />
             ) : (
               <IKVideo
@@ -74,7 +77,6 @@ export default function VideoComponent({ video, onDelete }: { video: IVideo; onD
                 ]}
                 controls={video.controls}
                 className="w-full h-full object-cover"
-                //onError={() => setHasError(true)}
               />
             )}
           </div>
