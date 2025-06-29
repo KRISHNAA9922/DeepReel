@@ -1,34 +1,40 @@
-
 "use client";
 
 import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useNotification } from "./Notification";
 import Image from "next/image";
+import FileUpload from "./FileUpload";
 
-interface VideoUploadFormProps {
-  onUploadSuccess?: () => void;
-}
-
-const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onUploadSuccess }) => {
+const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadSuccess }) => {
   const { data: session } = useSession();
   const { showNotification } = useNotification();
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [videoUrl, setVideoUrl] = useState("");
-  const [thumbnailUrl, setThumbnailUrl] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [videoUrl, setVideoUrl] = useState<string>("");
+  const [thumbnailUrl, setThumbnailUrl] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const [uploadingVideo, setUploadingVideo] = useState<boolean>(false);
 
-  const convertToEmbedUrl = (url: string) => {
-    const match = url.match(/(?:watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-    return match ? `https://www.youtube.com/embed/${match[1]}` : url;
+  const handleFileUploadSuccess = (res: any) => {
+    // Assuming res.url contains the uploaded video URL
+    setVideoUrl(res.url);
+    // Optionally set thumbnail URL if available in response metadata
+    if (res.thumbnailUrl) {
+      setThumbnailUrl(res.thumbnailUrl);
+    }
+    showNotification("Video uploaded successfully!", "success");
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleFileUploadProgress = (progress: number) => {
+    setUploadingVideo(progress < 100);
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!title || !description || !videoUrl ) {
+    if (!title || !description || !videoUrl) {
       showNotification("Please fill in all fields.", "error");
       return;
     }
@@ -41,32 +47,23 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onUploadSuccess }) =>
     setLoading(true);
 
     try {
-      const embedUrl = convertToEmbedUrl(videoUrl);
-
       const response = await fetch("/api/video", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title,
-          description,
-          videoUrl: embedUrl,
-          thumbnailUrl,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, description, videoUrl, thumbnailUrl }),
       });
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Upload failed");
 
-      showNotification("Video uploaded successfully!", "success");
+      showNotification("Video metadata saved successfully!", "success");
 
       setTitle("");
       setDescription("");
       setVideoUrl("");
       setThumbnailUrl("");
       onUploadSuccess?.();
-    } catch (error) {
+    } catch (error: unknown) {
       showNotification(error instanceof Error ? error.message : String(error), "error");
     } finally {
       setLoading(false);
@@ -74,7 +71,7 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onUploadSuccess }) =>
   };
 
   return (
-<div className="bg-black border border-slate-800 rounded-xl p-6 shadow-xl max-w-md mx-auto my-12 sm:px-6">
+    <div className="bg-black border border-slate-800 rounded-xl p-6 shadow-xl max-w-md mx-auto my-12 sm:px-6">
       <h2 className="text-3xl font-semibold text-white mb-6 text-center sm:text-2xl sm:mb-4">
         🎬 Upload a Video
       </h2>
@@ -112,21 +109,34 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onUploadSuccess }) =>
           />
         </div>
 
-        {/* Video URL */}
+        {/* File Upload */}
         <div>
-          <label htmlFor="videoUrl" className="block text-sm font-medium text-slate-200 mb-1">
-             Video URL
+          <label className="block text-sm font-medium text-slate-200 mb-1">
+            Upload Video File
           </label>
-          <input
-            id="videoUrl"
-            type="url"
-            value={videoUrl}
-            onChange={(e) => setVideoUrl(e.target.value)}
-            placeholder="https://..."
-            className="w-full rounded-lg border border-slate-600 bg-slate-900 text-white placeholder:text-slate-400 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-500 shadow-sm"
-            required
+          <FileUpload
+            onSuccess={handleFileUploadSuccess}
+            onProgress={handleFileUploadProgress}
+            fileType="video"
           />
+          {uploadingVideo && <p className="text-sm text-slate-400 mt-1">Uploading video...</p>}
         </div>
+
+        {/* Video URL (read-only) */}
+        {videoUrl && (
+          <div>
+            <label htmlFor="videoUrl" className="block text-sm font-medium text-slate-200 mb-1">
+              Video URL
+            </label>
+            <input
+              id="videoUrl"
+              type="url"
+              value={videoUrl}
+              readOnly
+              className="w-full rounded-lg border border-slate-600 bg-slate-700 text-white px-4 py-2"
+            />
+          </div>
+        )}
 
         {/* Thumbnail URL */}
         <div>
@@ -148,26 +158,28 @@ const VideoUploadForm: React.FC<VideoUploadFormProps> = ({ onUploadSuccess }) =>
         {thumbnailUrl && (
           <div className="mt-3 sm:mt-2">
             <p className="text-sm text-slate-500 mb-1">Thumbnail Preview:</p>
-             <Image
-        src={thumbnailUrl}
-        alt="Thumbnail preview"
-        fill
-        className="object-cover rounded-md"
-      />
+            <div className="relative w-full h-48">
+              <Image
+                src={thumbnailUrl}
+                alt="Thumbnail preview"
+                fill
+                className="object-cover rounded-md"
+              />
+            </div>
           </div>
         )}
 
         {/* Submit Button */}
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || uploadingVideo}
           className={`w-full py-2 px-4 font-semibold text-white rounded-lg transition duration-200 ${
-            loading
+            loading || uploadingVideo
               ? "bg-slate-600 cursor-not-allowed animate-pulse"
               : "bg-slate-800 hover:bg-slate-700"
           }`}
         >
-          {loading ? "Uploading..." : "Upload Video"}
+          {loading ? "Saving..." : "Upload Video"}
         </button>
       </form>
     </div>
