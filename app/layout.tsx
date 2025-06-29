@@ -5,7 +5,6 @@ import Providers from "./components/Providers";
 import { Suspense } from "react";
 import Loading from "./loading";
 import PageLoader from "./components/PageLoader";
-import { BackgroundLines } from "./components/ui/background-lines";
 
 // Fonts
 const geistSans = Geist({
@@ -38,12 +37,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-black text-white`}
       >
-        {/* ✅ Wrapper for relative positioning and full-page height */}
         <div className="relative min-h-screen w-full">
-          {/* ✅ Full-height background that scrolls with the page */}
-          <BackgroundLines className="absolute top-0 left-0 w-full h-full -z-10 pointer-events-none" children={undefined} />
-
-          {/* ✅ Foreground: providers + app content */}
           <Providers>
             <PageLoader />
             <Suspense fallback={<Loading />}>{children}</Suspense>

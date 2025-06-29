@@ -8,7 +8,7 @@ import { NotificationProvider } from "../components/Notification";
 import VideoFeed from "../components/VideoFeed";
 import { IVideo } from "@/models/Video";
 import { motion } from "framer-motion";
-import { BackgroundLines } from "../components/ui/background-lines";
+import VideoUploadForm from "../components/VideoUploadForm";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -34,12 +34,9 @@ export default function Home() {
       <NotificationProvider>
         <Header />
         
-        {/* ✅ Main container with fixed background effect */}
+        {/* Main container with clean background */}
         <main className="relative min-h-screen bg-black text-white overflow-x-hidden">
-          {/* ✅ Fixed background effect that does not scroll */}
-          <BackgroundLines className="fixed inset-0 -z-10 pointer-events-none" children={undefined} />
-
-          {/* ✅ Scrollable foreground content */}
+          {/* Foreground content */}
           <div className="relative z-10 container mx-auto px-4 py-8 space-y-6">
             {/* Hero Section */}
             <motion.div
@@ -74,7 +71,7 @@ export default function Home() {
                     transition={{ duration: 0.3 }}
                     className="flex justify-center mb-6"
                   >
-                    {/* You can add an Upload form/button here if needed */}
+                    <VideoUploadForm />
                   </motion.div>
                 ) : (
                   <motion.p

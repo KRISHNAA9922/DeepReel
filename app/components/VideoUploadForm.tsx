@@ -6,6 +6,11 @@ import { useNotification } from "./Notification";
 import Image from "next/image";
 import FileUpload from "./FileUpload";
 
+interface UploadedFileResponse {
+  url: string;
+  thumbnailUrl?: string;
+}
+
 const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadSuccess }) => {
   const { data: session } = useSession();
   const { showNotification } = useNotification();
@@ -16,9 +21,9 @@ const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadS
   const [thumbnailUrl, setThumbnailUrl] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [uploadingVideo, setUploadingVideo] = useState<boolean>(false);
-  const [uploadProgress, setUploadProgress] = useState<number>(0); 
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
 
-  const handleFileUploadSuccess = (res: any) => {
+  const handleFileUploadSuccess = (res: UploadedFileResponse) => {
     setVideoUrl(res.url);
     if (res.thumbnailUrl) {
       setThumbnailUrl(res.thumbnailUrl);
@@ -78,7 +83,6 @@ const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadS
       </h2>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Title */}
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-slate-200 mb-1">
             Video Title
@@ -89,12 +93,11 @@ const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadS
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter a catchy title"
-            className="w-full rounded-lg border border-slate-600 bg-slate-900 text-white placeholder:text-slate-400 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-500 shadow-sm"
+            className="w-full rounded-lg border border-slate-600 bg-slate-900 text-white placeholder:text-slate-400 px-4 py-2"
             required
           />
         </div>
 
-        {/* Description */}
         <div>
           <label htmlFor="description" className="block text-sm font-medium text-slate-200 mb-1">
             Description
@@ -105,12 +108,11 @@ const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadS
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Brief description of your video..."
             rows={3}
-            className="w-full rounded-lg border border-slate-600 bg-slate-900 text-white placeholder:text-slate-400 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-500 shadow-sm"
+            className="w-full rounded-lg border border-slate-600 bg-slate-900 text-white placeholder:text-slate-400 px-4 py-2"
             required
           />
         </div>
 
-        {/* File Upload */}
         <div>
           <label className="block text-sm font-medium text-slate-200 mb-1">
             Upload Video File
@@ -135,7 +137,6 @@ const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadS
           )}
         </div>
 
-        {/* Video URL (readonly) */}
         {videoUrl && (
           <div>
             <label htmlFor="videoUrl" className="block text-sm font-medium text-slate-200 mb-1">
@@ -151,7 +152,6 @@ const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadS
           </div>
         )}
 
-        {/* Thumbnail */}
         <div>
           <label htmlFor="thumbnailUrl" className="block text-sm font-medium text-slate-200 mb-1">
             Thumbnail Image URL
@@ -162,12 +162,11 @@ const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadS
             value={thumbnailUrl}
             onChange={(e) => setThumbnailUrl(e.target.value)}
             placeholder="https://example.com/image.jpg"
-            className="w-full rounded-lg border border-slate-600 bg-slate-900 text-white placeholder:text-slate-400 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-slate-500 shadow-sm"
+            className="w-full rounded-lg border border-slate-600 bg-slate-900 text-white placeholder:text-slate-400 px-4 py-2"
             required
           />
         </div>
 
-        {/* Thumbnail Preview */}
         {thumbnailUrl && (
           <div className="mt-3 sm:mt-2">
             <p className="text-sm text-slate-500 mb-1">Thumbnail Preview:</p>
@@ -182,7 +181,6 @@ const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadS
           </div>
         )}
 
-        {/* Submit Button */}
         <button
           type="submit"
           disabled={loading || uploadingVideo}
