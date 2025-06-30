@@ -14,7 +14,6 @@ interface UploadedFileResponse {
 const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadSuccess }) => {
   const { data: session } = useSession();
   const { showNotification } = useNotification();
-
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [videoUrl, setVideoUrl] = useState<string>("");
@@ -52,7 +51,7 @@ const VideoUploadForm: React.FC<{ onUploadSuccess?: () => void }> = ({ onUploadS
     setLoading(true);
 
     try {
-      const response = await fetch("/api/video", {
+      const response = await fetch("/api/video/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, description, videoUrl, thumbnailUrl }),

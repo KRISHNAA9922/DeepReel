@@ -31,7 +31,7 @@ export default function VideoComponent({ video, onDelete, isActive }: { video: I
     }
     setIsDeleting(true);
     try {
-      const res = await fetch(`/api/video?id=${video._id}`, {
+      const res = await fetch(`/api/video/delete?id=${video._id}`, {
         method: "DELETE",
       });
       if (!res.ok) {

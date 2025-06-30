@@ -20,7 +20,7 @@ export default function Home() {
 
   const fetchVideos = async () => {
     try {
-      const res = await fetch("/api/video");
+      const res = await fetch("/api/video/list");
       const data: IVideo[] = await res.json();
       console.log("Fetched videos:", data);
       setVideos(data);
