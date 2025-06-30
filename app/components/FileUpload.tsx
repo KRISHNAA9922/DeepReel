@@ -41,11 +41,11 @@ const FileUpload = ({ onSuccess, onProgress, fileType }: FileUploadProps) => {
     setUploading(true);
 
     try {
-      // Get ImageKit auth signature
+      // ✅ Get ImageKit auth signature
       const authRes = await fetch("/api/auth/imagekit-auth");
       const auth = await authRes.json();
 
-      // Upload to ImageKit
+      // ✅ Upload to ImageKit
       const res = await upload({
         file,
         fileName: file.name,
@@ -59,9 +59,9 @@ const FileUpload = ({ onSuccess, onProgress, fileType }: FileUploadProps) => {
             onProgress(Math.round(percent));
           }
         },
-      }) as UploadResponse; // Cast result to expected type
+      }) as UploadResponse; // ✅ Cast result to expected type
 
-      //  Call success callback with result
+      // ✅ Call success callback with result
       onSuccess(res);
     } catch (err) {
       console.error("Upload failed", err);
